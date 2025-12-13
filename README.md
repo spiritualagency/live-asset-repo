@@ -1,2 +1,2 @@
 # live-asset-repo
-Host Live WordPress Assets Ready to Deploy as an Obsfuscated Zip File
+Host Live WordPress Assets Ready to Deploy as a .zip file
