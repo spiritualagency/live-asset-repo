@@ -1,0 +1,156 @@
+/**
+ * The following styles get applied inside the editor only.
+ */
+
+.wp-block-telex-block-permanent-plugin-theme-downloader {
+	.components-button.pptd-copied {
+		background: #00a32a;
+		color: #fff;
+
+		&:hover {
+			background: #008a20;
+			color: #fff;
+		}
+	}
+
+	.pptd-tabs {
+		margin-top: 16px;
+
+		.components-tab-panel__tabs {
+			display: flex;
+			gap: 8px;
+			border-bottom: 2px solid #e0e0e0;
+			margin-bottom: 20px;
+
+			button {
+				padding: 12px 20px;
+				border: none;
+				background: transparent;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 500;
+				color: #757575;
+				border-bottom: 2px solid transparent;
+				margin-bottom: -2px;
+				transition: all 0.2s ease;
+
+				&:hover {
+					color: #1e1e1e;
+				}
+
+				&.is-active {
+					color: #0073aa;
+					border-bottom-color: #0073aa;
+				}
+			}
+		}
+	}
+
+	.pptd-log-section {
+		padding: 0;
+	}
+
+	.pptd-log-header {
+		margin-bottom: 20px;
+
+		h4 {
+			margin: 0 0 8px 0;
+			font-size: 16px;
+			font-weight: 600;
+			color: #1e1e1e;
+		}
+
+		.pptd-log-description {
+			margin: 0;
+			font-size: 13px;
+			color: #757575;
+		}
+	}
+
+	.pptd-log-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pptd-log-entry {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 16px;
+		background: #f9f9f9;
+		border: 1px solid #e0e0e0;
+		border-left: 4px solid #0073aa;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+	}
+
+	.pptd-log-icon {
+		font-size: 24px;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
+	.pptd-log-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.pptd-log-name {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 15px;
+
+		strong {
+			color: #1e1e1e;
+			font-weight: 600;
+		}
+	}
+
+	.pptd-log-type {
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		padding: 2px 8px;
+		background: #0073aa;
+		color: #fff;
+		border-radius: 3px;
+		font-weight: 600;
+	}
+
+	.pptd-log-versions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	.pptd-log-old-version {
+		color: #d63638;
+		font-weight: 600;
+	}
+
+	.pptd-log-arrow {
+		color: #757575;
+	}
+
+	.pptd-log-new-version {
+		color: #00a32a;
+		font-weight: 600;
+	}
+
+	.pptd-log-timestamp {
+		font-size: 12px;
+		color: #757575;
+	}
+}

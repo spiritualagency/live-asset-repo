@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".pptd-download-link").forEach(t=>{t.addEventListener("click",function(t){const n=this.textContent;this.textContent="⬇ Downloading...",setTimeout(()=>{this.textContent=n},2e3)})})});

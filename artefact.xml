@@ -1,0 +1,1534 @@
+<?xml version="1.0"?><artefact xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="artefact.xsd" name="Permanent Plugin Theme Downloader" slug="permanent-plugin-theme-downloader" type="code-package" schemaVersion="2">
+  <file path="readme.txt">
+    <description>This file contains the readme information for the block. It is used to provide information about the block, its usage, and any other relevant details.</description>
+    <content><![CDATA[=== Permanent Plugin Theme Downloader ===
+
+Contributors:      WordPress Telex
+Tags:              block, plugins, themes, download, share
+Tested up to:      6.8
+Stable tag:        0.1.0
+License:           GPLv2 or later
+License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+
+Generate permanent, shareable download URLs for installed plugins and themes with secure token-based authentication that bypasses basic auth.
+
+== Description ==
+
+The Permanent Plugin Theme Downloader block creates physical ZIP files of all your installed WordPress plugins and themes, stored in wp-content/pptd-downloads/. These ZIP files are automatically created and updated, with secure permanent URLs that work even when your WordPress site is behind basic authentication.
+
+**Key Features:**
+
+* **Token-Based Security**: Secure download URLs with embedded authentication tokens that bypass basic auth
+* **Zero Configuration**: Automatic setup - no manual configuration required
+* **Physical ZIP Storage**: All plugin and theme ZIPs are stored in wp-content/pptd-downloads/
+* **Permanent URLs**: Secure links that never change and always point to the latest version
+* **Auto-Update Support**: ZIP files automatically regenerate when plugins or themes are updated
+* **Basic Auth Bypass**: Download URLs work even when your site requires basic authentication
+* **Easy Sharing**: One-click copy-to-clipboard functionality in the editor
+* **Clean Interface**: List view of all installed plugins and themes with their download URLs
+* **Frontend Downloads**: Clickable links that trigger immediate ZIP file downloads
+* **Automatic Management**: ZIPs regenerate on plugin/theme activation, deactivation, and updates
+
+**How It Works:**
+
+1. When you activate the plugin, it automatically generates a secure secret key
+2. ZIP files are created for each installed plugin and theme in wp-content/pptd-downloads/
+3. Each ZIP gets a permanent, tokenized URL like: yoursite.com/?pptd_download=plugin-name.zip&token=abc123
+4. The token is cryptographically signed and validates against the secret key
+5. Downloads work even if your WordPress site is behind basic authentication
+6. When you update a plugin or theme, its ZIP is automatically regenerated
+7. The URL stays the same (tokens are permanent for each file), always serving the latest version
+
+**Security Features:**
+
+* **HMAC-SHA256 Tokens**: Cryptographically secure tokens that cannot be forged
+* **Automatic Secret Key**: 64-character random secret key generated on activation
+* **Path Validation**: Prevents directory traversal attacks
+* **File Type Verification**: Only allows .zip file downloads
+* **Protected Directory**: Download directory includes .htaccess protection
+* **No Direct File Access**: All downloads go through the token validation system
+
+**Perfect For:**
+
+* Sites behind basic authentication or firewalls
+* Development teams sharing internal plugins
+* Agencies distributing custom themes to clients
+* Plugin developers providing direct downloads
+* Theme creators offering alternative download methods
+* Anyone needing persistent, authenticated download URLs for WordPress extensions
+
+== Installation ==
+
+1. Upload the plugin files to the `/wp-content/plugins/permanent-plugin-theme-downloader` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress
+3. The plugin automatically:
+   - Creates wp-content/pptd-downloads/ directory
+   - Generates a secure secret key
+   - Creates ZIP files for all plugins and themes
+   - Generates secure tokens for each file
+4. Add the "Permanent Plugin Theme Downloader" block to any post or page
+5. The block will display all plugins and themes with their secure download URLs
+
+== Frequently Asked Questions ==
+
+= How does this work with basic authentication? =
+
+The plugin uses a custom download endpoint with token-based authentication that completely bypasses basic auth. When someone accesses a download URL, the token is validated server-side without requiring basic auth credentials.
+
+= What are the permanent URLs? =
+
+Each plugin gets a URL like: yoursite.com/?pptd_download=plugin-slug.zip&token=abc123
+Each theme gets a URL like: yoursite.com/?pptd_download=theme-slug.zip&token=def456
+
+The tokens are permanent and cryptographically secure, tied to each specific file.
+
+= Do I need to configure anything? =
+
+No! The plugin automatically generates a secure secret key on activation and handles all token generation. There's no manual configuration needed.
+
+= What happens when I update a plugin or theme? =
+
+The ZIP file is automatically regenerated with the new version. The URL (including the token) stays exactly the same, so all your shared links continue to work and serve the updated version.
+
+= Are the tokens secure? =
+
+Yes! Tokens are generated using HMAC-SHA256 with a 64-character random secret key. They cannot be forged or guessed, and each token is permanently tied to a specific file.
+
+= Can I manually regenerate all ZIPs? =
+
+Yes! In the block's sidebar settings, there's a "Regenerate All ZIPs" button that rebuilds all ZIP files with the current versions.
+
+= Is this secure? =
+
+Yes! The plugin includes:
+- HMAC-SHA256 cryptographic tokens
+- Automatic secret key generation
+- Sanitized file names to prevent directory traversal
+- Path validation to ensure only legitimate files are served
+- File type verification (only .zip files)
+- Protected directory with .htaccess
+- WordPress capability checks for admin operations
+
+= Does this work with both plugins and themes? =
+
+Yes, the block supports both WordPress plugins and themes seamlessly.
+
+= What if I deactivate the plugin? =
+
+The ZIP files in wp-content/pptd-downloads/ are automatically cleaned up when you deactivate the plugin. The secret key remains stored in your database.
+
+== Screenshots ==
+
+1. Editor view showing the list of installed plugins and themes with copy-to-clipboard and download buttons
+2. Frontend view displaying clickable download links for visitors
+3. Sidebar settings with regenerate button
+4. Successfully copied URL notification with secure token
+
+== Changelog ==
+
+= 0.1.0 =
+* Initial release
+* Token-based authentication system
+* Automatic secret key generation
+* Basic authentication bypass support
+* Physical ZIP file storage in wp-content/pptd-downloads/
+* Permanent tokenized URLs
+* Automatic ZIP regeneration on plugin/theme updates
+* Copy-to-clipboard functionality
+* Frontend download links
+* Manual regenerate all ZIPs option
+* HMAC-SHA256 security
+* Automatic cleanup on deactivation
+
+== Security ==
+
+This plugin implements multiple security layers:
+- Generates HMAC-SHA256 tokens with a 64-character random secret key
+- Validates all tokens cryptographically before allowing downloads
+- Verifies file paths to prevent unauthorized access
+- Sanitizes file names to prevent injection attacks
+- Protects download directory with .htaccess
+- Only allows .zip file downloads
+- Uses WordPress core functions for file operations
+- Automatically cleans up on deactivation
+- Bypasses basic authentication securely without exposing credentials]]></content>
+  </file>
+  <file path="permanent-plugin-theme-downloader.php">
+    <description>This file contains the block registration code in the form of a single block plugin. Any other plugin related functionality should be added to this file. All block rendering functionality should go to the `render.php` file.</description>
+    <content><![CDATA[<?php
+/**
+ * Plugin Name:       Permanent Plugin Theme Downloader
+ * Description:       Generate permanent, shareable download URLs for installed plugins and themes that automatically serve the latest versions.
+ * Version:           0.1.0
+ * Requires at least: 6.1
+ * Requires PHP:      7.4
+ * Author:            WordPress Telex
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       permanent-plugin-theme-downloader
+ *
+ * @package PermanentPluginThemeDownloader
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+define( 'PPTD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PPTD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PPTD_DOWNLOAD_DIR', WP_CONTENT_DIR . '/pptd-downloads' );
+define( 'PPTD_DOWNLOAD_URL', content_url( 'pptd-downloads' ) );
+define( 'PPTD_LOG_FILE', PPTD_DOWNLOAD_DIR . '/update-log.json' );
+define( 'PPTD_SECRET_KEY_OPTION', 'pptd_secret_key' );
+
+/**
+ * Registers the block using the metadata loaded from the `block.json` file.
+ */
+function permanent_plugin_theme_downloader_block_init() {
+	if ( file_exists( PPTD_PLUGIN_DIR . 'build/block.json' ) ) {
+		register_block_type( PPTD_PLUGIN_DIR . 'build/' );
+	}
+}
+add_action( 'init', 'permanent_plugin_theme_downloader_block_init' );
+
+/**
+ * Get or generate the secret key for token generation.
+ */
+function permanent_plugin_theme_downloader_get_secret_key() {
+	$secret_key = get_option( PPTD_SECRET_KEY_OPTION );
+	
+	if ( empty( $secret_key ) ) {
+		$secret_key = wp_generate_password( 64, true, true );
+		update_option( PPTD_SECRET_KEY_OPTION, $secret_key );
+	}
+	
+	return $secret_key;
+}
+
+/**
+ * Generate a secure token for a specific file.
+ */
+function permanent_plugin_theme_downloader_generate_token( $filename ) {
+	$secret_key = permanent_plugin_theme_downloader_get_secret_key();
+	$data = $filename . '|' . site_url();
+	return hash_hmac( 'sha256', $data, $secret_key );
+}
+
+/**
+ * Verify a token for a specific file.
+ */
+function permanent_plugin_theme_downloader_verify_token( $filename, $token ) {
+	$expected_token = permanent_plugin_theme_downloader_generate_token( $filename );
+	return hash_equals( $expected_token, $token );
+}
+
+/**
+ * Get the secure download URL with token.
+ */
+function permanent_plugin_theme_downloader_get_secure_url( $filename ) {
+	$token = permanent_plugin_theme_downloader_generate_token( $filename );
+	return add_query_arg(
+		array(
+			'pptd_download' => $filename,
+			'token' => $token,
+		),
+		home_url( '/' )
+	);
+}
+
+/**
+ * Handle download requests with token authentication.
+ */
+function permanent_plugin_theme_downloader_handle_download() {
+	if ( ! isset( $_GET['pptd_download'] ) || ! isset( $_GET['token'] ) ) {
+		return;
+	}
+	
+	$filename = sanitize_file_name( $_GET['pptd_download'] );
+	$token = sanitize_text_field( $_GET['token'] );
+	
+	if ( ! permanent_plugin_theme_downloader_verify_token( $filename, $token ) ) {
+		wp_die( esc_html__( 'Invalid download token.', 'permanent-plugin-theme-downloader' ), 403 );
+	}
+	
+	$file_path = PPTD_DOWNLOAD_DIR . '/' . $filename;
+	
+	if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
+		wp_die( esc_html__( 'File not found.', 'permanent-plugin-theme-downloader' ), 404 );
+	}
+	
+	if ( strpos( realpath( $file_path ), realpath( PPTD_DOWNLOAD_DIR ) ) !== 0 ) {
+		wp_die( esc_html__( 'Invalid file path.', 'permanent-plugin-theme-downloader' ), 403 );
+	}
+	
+	if ( substr( $filename, -4 ) !== '.zip' ) {
+		wp_die( esc_html__( 'Invalid file type.', 'permanent-plugin-theme-downloader' ), 403 );
+	}
+	
+	header( 'Content-Type: application/zip' );
+	header( 'Content-Disposition: attachment; filename="' . basename( $filename ) . '"' );
+	header( 'Content-Length: ' . filesize( $file_path ) );
+	header( 'Cache-Control: no-cache, must-revalidate' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
+	
+	readfile( $file_path );
+	exit;
+}
+add_action( 'init', 'permanent_plugin_theme_downloader_handle_download', 1 );
+
+/**
+ * Create the downloads directory if it doesn't exist.
+ */
+function permanent_plugin_theme_downloader_ensure_directory() {
+	if ( ! file_exists( PPTD_DOWNLOAD_DIR ) ) {
+		wp_mkdir_p( PPTD_DOWNLOAD_DIR );
+		
+		$htaccess_content = "<IfModule mod_rewrite.c>\nRewriteEngine Off\n</IfModule>\n";
+		file_put_contents( PPTD_DOWNLOAD_DIR . '/.htaccess', $htaccess_content );
+		
+		file_put_contents( PPTD_DOWNLOAD_DIR . '/index.php', '<?php // Silence is golden' );
+	}
+	
+	if ( ! file_exists( PPTD_LOG_FILE ) ) {
+		file_put_contents( PPTD_LOG_FILE, json_encode( array() ) );
+	}
+}
+
+/**
+ * Initialize plugin on activation.
+ */
+function permanent_plugin_theme_downloader_activate() {
+	permanent_plugin_theme_downloader_ensure_directory();
+	
+	permanent_plugin_theme_downloader_get_secret_key();
+	
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+	
+	$all_plugins = get_plugins();
+	foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+		permanent_plugin_theme_downloader_create_plugin_zip( $plugin_file, false );
+	}
+	
+	$all_themes = wp_get_themes();
+	foreach ( $all_themes as $theme_slug => $theme_obj ) {
+		permanent_plugin_theme_downloader_create_theme_zip( $theme_slug, false );
+	}
+}
+register_activation_hook( __FILE__, 'permanent_plugin_theme_downloader_activate' );
+
+/**
+ * Log an update event.
+ */
+function permanent_plugin_theme_downloader_log_update( $type, $slug, $name, $old_version, $new_version ) {
+	permanent_plugin_theme_downloader_ensure_directory();
+	
+	$log = array();
+	if ( file_exists( PPTD_LOG_FILE ) ) {
+		$log_content = file_get_contents( PPTD_LOG_FILE );
+		$log = json_decode( $log_content, true );
+		if ( ! is_array( $log ) ) {
+			$log = array();
+		}
+	}
+	
+	$log[] = array(
+		'type' => $type,
+		'slug' => $slug,
+		'name' => $name,
+		'old_version' => $old_version,
+		'new_version' => $new_version,
+		'timestamp' => current_time( 'mysql' ),
+		'unix_timestamp' => time(),
+	);
+	
+	file_put_contents( PPTD_LOG_FILE, json_encode( $log, JSON_PRETTY_PRINT ) );
+}
+
+/**
+ * Get the update log.
+ */
+function permanent_plugin_theme_downloader_get_log() {
+	if ( ! file_exists( PPTD_LOG_FILE ) ) {
+		return array();
+	}
+	
+	$log_content = file_get_contents( PPTD_LOG_FILE );
+	$log = json_decode( $log_content, true );
+	
+	if ( ! is_array( $log ) ) {
+		return array();
+	}
+	
+	usort( $log, function( $a, $b ) {
+		return $b['unix_timestamp'] - $a['unix_timestamp'];
+	});
+	
+	return $log;
+}
+
+/**
+ * Create or update a ZIP file for a plugin.
+ */
+function permanent_plugin_theme_downloader_create_plugin_zip( $plugin_file, $log_update = false ) {
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$all_plugins = get_plugins();
+	if ( ! isset( $all_plugins[ $plugin_file ] ) ) {
+		return false;
+	}
+
+	$plugin_data = $all_plugins[ $plugin_file ];
+	$slug = dirname( $plugin_file );
+	if ( $slug === '.' ) {
+		$slug = basename( $plugin_file, '.php' );
+	}
+
+	$plugin_dir = WP_PLUGIN_DIR . '/' . dirname( $plugin_file );
+	if ( dirname( $plugin_file ) === '.' ) {
+		$plugin_dir = WP_PLUGIN_DIR;
+		$source_path = WP_PLUGIN_DIR . '/' . $plugin_file;
+	} else {
+		$source_path = $plugin_dir;
+	}
+
+	permanent_plugin_theme_downloader_ensure_directory();
+
+	$sanitized_slug = sanitize_file_name( $slug );
+	$zip_filename = 'plugin-' . $sanitized_slug . '.zip';
+	$zip_path = PPTD_DOWNLOAD_DIR . '/' . $zip_filename;
+
+	$old_version = null;
+	if ( file_exists( $zip_path ) && $log_update ) {
+		$old_version = get_option( 'pptd_plugin_version_' . $sanitized_slug );
+	}
+
+	if ( file_exists( $zip_path ) ) {
+		unlink( $zip_path );
+	}
+
+	if ( ! class_exists( 'ZipArchive' ) ) {
+		return false;
+	}
+
+	$zip = new ZipArchive();
+	if ( $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== true ) {
+		return false;
+	}
+
+	if ( is_file( $source_path ) ) {
+		$zip->addFile( $source_path, basename( $source_path ) );
+	} else {
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $source_path, RecursiveDirectoryIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		$base_name = basename( $source_path );
+
+		foreach ( $files as $file ) {
+			$file_path = $file->getRealPath();
+			$relative_path = $base_name . '/' . substr( $file_path, strlen( $source_path ) + 1 );
+
+			if ( $file->isDir() ) {
+				$zip->addEmptyDir( $relative_path );
+			} else {
+				$zip->addFile( $file_path, $relative_path );
+			}
+		}
+	}
+
+	$zip->close();
+
+	if ( $log_update && $old_version && $old_version !== $plugin_data['Version'] ) {
+		permanent_plugin_theme_downloader_log_update(
+			'plugin',
+			$sanitized_slug,
+			$plugin_data['Name'],
+			$old_version,
+			$plugin_data['Version']
+		);
+	}
+
+	update_option( 'pptd_plugin_version_' . $sanitized_slug, $plugin_data['Version'] );
+
+	return array(
+		'path' => $zip_path,
+		'url' => permanent_plugin_theme_downloader_get_secure_url( $zip_filename ),
+		'filename' => $zip_filename,
+	);
+}
+
+/**
+ * Create or update a ZIP file for a theme.
+ */
+function permanent_plugin_theme_downloader_create_theme_zip( $theme_slug, $log_update = false ) {
+	$theme = wp_get_theme( $theme_slug );
+	if ( ! $theme->exists() ) {
+		return false;
+	}
+
+	$theme_dir = $theme->get_stylesheet_directory();
+
+	permanent_plugin_theme_downloader_ensure_directory();
+
+	$sanitized_slug = sanitize_file_name( $theme_slug );
+	$zip_filename = 'theme-' . $sanitized_slug . '.zip';
+	$zip_path = PPTD_DOWNLOAD_DIR . '/' . $zip_filename;
+
+	$old_version = null;
+	if ( file_exists( $zip_path ) && $log_update ) {
+		$old_version = get_option( 'pptd_theme_version_' . $sanitized_slug );
+	}
+
+	if ( file_exists( $zip_path ) ) {
+		unlink( $zip_path );
+	}
+
+	if ( ! class_exists( 'ZipArchive' ) ) {
+		return false;
+	}
+
+	$zip = new ZipArchive();
+	if ( $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== true ) {
+		return false;
+	}
+
+	$files = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $theme_dir, RecursiveDirectoryIterator::SKIP_DOTS ),
+		RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	$base_name = basename( $theme_dir );
+
+	foreach ( $files as $file ) {
+		$file_path = $file->getRealPath();
+		$relative_path = $base_name . '/' . substr( $file_path, strlen( $theme_dir ) + 1 );
+
+		if ( $file->isDir() ) {
+			$zip->addEmptyDir( $relative_path );
+		} else {
+			$zip->addFile( $file_path, $relative_path );
+		}
+	}
+
+	$zip->close();
+
+	$theme_version = $theme->get( 'Version' );
+
+	if ( $log_update && $old_version && $old_version !== $theme_version ) {
+		permanent_plugin_theme_downloader_log_update(
+			'theme',
+			$sanitized_slug,
+			$theme->get( 'Name' ),
+			$old_version,
+			$theme_version
+		);
+	}
+
+	update_option( 'pptd_theme_version_' . $sanitized_slug, $theme_version );
+
+	return array(
+		'path' => $zip_path,
+		'url' => permanent_plugin_theme_downloader_get_secure_url( $zip_filename ),
+		'filename' => $zip_filename,
+	);
+}
+
+/**
+ * Get all installed plugins with their download URLs.
+ */
+function permanent_plugin_theme_downloader_get_plugins() {
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$all_plugins = get_plugins();
+	$plugins_data = array();
+
+	foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+		$slug = dirname( $plugin_file );
+		if ( $slug === '.' ) {
+			$slug = basename( $plugin_file, '.php' );
+		}
+
+		$zip_info = permanent_plugin_theme_downloader_create_plugin_zip( $plugin_file );
+
+		$plugins_data[] = array(
+			'name' => $plugin_data['Name'],
+			'slug' => $slug,
+			'version' => $plugin_data['Version'],
+			'file' => $plugin_file,
+			'url' => $zip_info ? $zip_info['url'] : '',
+			'zip_exists' => $zip_info ? true : false,
+		);
+	}
+
+	return $plugins_data;
+}
+
+/**
+ * Get all installed themes with their download URLs.
+ */
+function permanent_plugin_theme_downloader_get_themes() {
+	$all_themes = wp_get_themes();
+	$themes_data = array();
+
+	foreach ( $all_themes as $theme_slug => $theme_obj ) {
+		$zip_info = permanent_plugin_theme_downloader_create_theme_zip( $theme_slug );
+
+		$themes_data[] = array(
+			'name' => $theme_obj->get( 'Name' ),
+			'slug' => $theme_slug,
+			'version' => $theme_obj->get( 'Version' ),
+			'url' => $zip_info ? $zip_info['url'] : '',
+			'zip_exists' => $zip_info ? true : false,
+		);
+	}
+
+	return $themes_data;
+}
+
+/**
+ * Register REST API endpoint for fetching plugins and themes.
+ */
+function permanent_plugin_theme_downloader_register_rest_routes() {
+	register_rest_route(
+		'pptd/v1',
+		'/items',
+		array(
+			'methods' => 'GET',
+			'callback' => 'permanent_plugin_theme_downloader_rest_get_items',
+			'permission_callback' => function () {
+				return current_user_can( 'edit_posts' );
+			},
+		)
+	);
+
+	register_rest_route(
+		'pptd/v1',
+		'/regenerate',
+		array(
+			'methods' => 'POST',
+			'callback' => 'permanent_plugin_theme_downloader_rest_regenerate',
+			'permission_callback' => function () {
+				return current_user_can( 'manage_options' );
+			},
+		)
+	);
+
+	register_rest_route(
+		'pptd/v1',
+		'/log',
+		array(
+			'methods' => 'GET',
+			'callback' => 'permanent_plugin_theme_downloader_rest_get_log',
+			'permission_callback' => function () {
+				return current_user_can( 'edit_posts' );
+			},
+		)
+	);
+}
+add_action( 'rest_api_init', 'permanent_plugin_theme_downloader_register_rest_routes' );
+
+/**
+ * REST API callback to get all plugins and themes.
+ */
+function permanent_plugin_theme_downloader_rest_get_items() {
+	return array(
+		'plugins' => permanent_plugin_theme_downloader_get_plugins(),
+		'themes' => permanent_plugin_theme_downloader_get_themes(),
+	);
+}
+
+/**
+ * REST API callback to regenerate all ZIP files.
+ */
+function permanent_plugin_theme_downloader_rest_regenerate() {
+	permanent_plugin_theme_downloader_get_plugins();
+	permanent_plugin_theme_downloader_get_themes();
+
+	return array(
+		'success' => true,
+		'message' => __( 'All ZIP files have been regenerated.', 'permanent-plugin-theme-downloader' ),
+	);
+}
+
+/**
+ * REST API callback to get the update log.
+ */
+function permanent_plugin_theme_downloader_rest_get_log() {
+	return array(
+		'log' => permanent_plugin_theme_downloader_get_log(),
+	);
+}
+
+/**
+ * Regenerate ZIP files when plugins are activated, deactivated, or updated.
+ */
+function permanent_plugin_theme_downloader_on_plugin_change( $plugin ) {
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$all_plugins = get_plugins();
+	if ( isset( $all_plugins[ $plugin ] ) ) {
+		permanent_plugin_theme_downloader_create_plugin_zip( $plugin, true );
+	}
+}
+add_action( 'activated_plugin', 'permanent_plugin_theme_downloader_on_plugin_change' );
+add_action( 'deactivated_plugin', 'permanent_plugin_theme_downloader_on_plugin_change' );
+add_action( 'upgrader_process_complete', 'permanent_plugin_theme_downloader_on_update', 10, 2 );
+
+/**
+ * Regenerate ZIP files when themes or plugins are updated.
+ */
+function permanent_plugin_theme_downloader_on_update( $upgrader_object, $options ) {
+	if ( $options['action'] === 'update' ) {
+		if ( $options['type'] === 'plugin' && isset( $options['plugins'] ) ) {
+			foreach ( $options['plugins'] as $plugin ) {
+				permanent_plugin_theme_downloader_create_plugin_zip( $plugin, true );
+			}
+		}
+
+		if ( $options['type'] === 'theme' && isset( $options['themes'] ) ) {
+			foreach ( $options['themes'] as $theme ) {
+				permanent_plugin_theme_downloader_create_theme_zip( $theme, true );
+			}
+		}
+	}
+}
+
+/**
+ * Clean up old ZIP files on plugin deactivation.
+ */
+function permanent_plugin_theme_downloader_cleanup() {
+	if ( file_exists( PPTD_DOWNLOAD_DIR ) ) {
+		$files = glob( PPTD_DOWNLOAD_DIR . '/*.zip' );
+		if ( $files ) {
+			foreach ( $files as $file ) {
+				if ( is_file( $file ) ) {
+					unlink( $file );
+				}
+			}
+		}
+	}
+}
+register_deactivation_hook( __FILE__, 'permanent_plugin_theme_downloader_cleanup' );]]></content>
+  </file>
+  <file path="src/block.json">
+    <description>This file contains metadata about the block including its name, title, category, icon, and other properties.</description>
+    <content><![CDATA[
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "telex/block-permanent-plugin-theme-downloader",
+	"version": "0.1.0",
+	"title": "Permanent Plugin Theme Downloader",
+	"category": "widgets",
+	"icon": "download",
+	"description": "Generate permanent, shareable download URLs for installed plugins and themes.",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "permanent-plugin-theme-downloader",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}
+  ]]></content>
+  </file>
+  <file path="src/index.js">
+    <description>This file registers the block, specifies the edit and save functions, and loads the block's metadata</description>
+    <content><![CDATA[/**
+ * Registers a new block provided a unique name and an object defining its behavior.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+import { registerBlockType } from '@wordpress/blocks';
+
+/**
+ * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
+ * All files containing `style` keyword are bundled together. The code used
+ * gets applied both to the front of your site and to the editor.
+ *
+ * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
+ */
+import './style.scss';
+
+/**
+ * Internal dependencies
+ */
+import Edit from './edit';
+import metadata from './block.json';
+
+/**
+ * Every block starts by registering a new block type definition.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
+ */
+registerBlockType( metadata.name, {
+	edit: Edit,
+	save: () => {
+		return null;
+	},
+} );]]></content>
+  </file>
+  <file path="src/edit.js">
+    <description>This file contains the edit function for the block which is responsible for rendering the block in the editor.</description>
+    <content><![CDATA[/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * React hook that is used to mark the block wrapper element.
+ * It provides all the necessary props like the class name.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
+ */
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+
+import { PanelBody, Button, Notice, Spinner, TabPanel } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import { copy, download, update } from '@wordpress/icons';
+import apiFetch from '@wordpress/api-fetch';
+
+/**
+ * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
+ * Those files can contain any CSS code that gets applied to the editor.
+ *
+ * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
+ */
+import './editor.scss';
+
+/**
+ * The edit function describes the structure of your block in the context of the
+ * editor. This represents what the editor will render when the block is used.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
+ *
+ * @return {Element} Element to render.
+ */
+export default function Edit() {
+	const blockProps = useBlockProps();
+	const [plugins, setPlugins] = useState([]);
+	const [themes, setThemes] = useState([]);
+	const [updateLog, setUpdateLog] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [regenerating, setRegenerating] = useState(false);
+	const [error, setError] = useState(null);
+	const [copiedUrl, setCopiedUrl] = useState(null);
+
+	const fetchItems = () => {
+		setLoading(true);
+		setError(null);
+
+		apiFetch({ path: '/pptd/v1/items' })
+			.then((data) => {
+				setPlugins(data.plugins || []);
+				setThemes(data.themes || []);
+				setLoading(false);
+			})
+			.catch((err) => {
+				setError(err.message || __('Failed to load plugins and themes', 'permanent-plugin-theme-downloader'));
+				setLoading(false);
+			});
+	};
+
+	const fetchLog = () => {
+		apiFetch({ path: '/pptd/v1/log' })
+			.then((data) => {
+				setUpdateLog(data.log || []);
+			})
+			.catch((err) => {
+				console.error('Failed to load update log:', err);
+			});
+	};
+
+	const regenerateZips = () => {
+		setRegenerating(true);
+		setError(null);
+
+		apiFetch({ 
+			path: '/pptd/v1/regenerate',
+			method: 'POST'
+		})
+			.then(() => {
+				setRegenerating(false);
+				fetchItems();
+				fetchLog();
+			})
+			.catch((err) => {
+				setError(err.message || __('Failed to regenerate ZIP files', 'permanent-plugin-theme-downloader'));
+				setRegenerating(false);
+			});
+	};
+
+	useEffect(() => {
+		fetchItems();
+		fetchLog();
+	}, []);
+
+	const copyToClipboard = (url) => {
+		if (typeof url !== 'string' || !url) {
+			setError(__('Invalid URL', 'permanent-plugin-theme-downloader'));
+			return;
+		}
+
+		try {
+			const textArea = document.createElement('textarea');
+			textArea.value = url;
+			textArea.style.position = 'fixed';
+			textArea.style.left = '-9999px';
+			textArea.style.top = '-9999px';
+			document.body.appendChild(textArea);
+			textArea.focus();
+			textArea.select();
+			
+			const successful = document.execCommand('copy');
+			document.body.removeChild(textArea);
+			
+			if (successful) {
+				setCopiedUrl(url);
+				setError(null);
+				setTimeout(() => setCopiedUrl(null), 2000);
+			} else {
+				setError(__('Unable to copy URL. Please copy it manually.', 'permanent-plugin-theme-downloader'));
+			}
+		} catch (err) {
+			console.error('Copy failed:', err);
+			setError(__('Unable to copy URL. Please copy it manually.', 'permanent-plugin-theme-downloader'));
+		}
+	};
+
+	const formatDate = (timestamp) => {
+		const date = new Date(timestamp);
+		return date.toLocaleString();
+	};
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={__('Settings', 'permanent-plugin-theme-downloader')}>
+					<Button 
+						variant="secondary" 
+						onClick={fetchItems} 
+						disabled={loading || regenerating}
+						style={{ marginBottom: '12px', width: '100%' }}
+					>
+						{loading ? __('Refreshing...', 'permanent-plugin-theme-downloader') : __('Refresh List', 'permanent-plugin-theme-downloader')}
+					</Button>
+					<Button 
+						variant="primary" 
+						onClick={regenerateZips} 
+						disabled={loading || regenerating}
+						style={{ width: '100%' }}
+					>
+						{regenerating ? __('Regenerating...', 'permanent-plugin-theme-downloader') : __('Regenerate All ZIPs', 'permanent-plugin-theme-downloader')}
+					</Button>
+					<p style={{ marginTop: '12px', fontSize: '13px', color: '#757575' }}>
+						{__('ZIP files are automatically created and stored in wp-content/pptd-downloads/. They update automatically when plugins or themes are updated. Click "Regenerate" to manually update all ZIP files.', 'permanent-plugin-theme-downloader')}
+					</p>
+				</PanelBody>
+			</InspectorControls>
+
+			<div {...blockProps}>
+				<div className="pptd-header">
+					<h3>{__('Permanent Download URLs', 'permanent-plugin-theme-downloader')}</h3>
+					<p className="pptd-description">
+						{__('ZIP files are stored in wp-content/pptd-downloads/ with permanent URLs that automatically serve the latest version when updated.', 'permanent-plugin-theme-downloader')}
+					</p>
+					{copiedUrl && (
+						<Notice status="success" isDismissible={false} className="pptd-notice">
+							{__('URL copied to clipboard!', 'permanent-plugin-theme-downloader')}
+						</Notice>
+					)}
+				</div>
+
+				{(loading || regenerating) && (
+					<div className="pptd-loading">
+						<Spinner />
+						<p>
+							{regenerating 
+								? __('Regenerating ZIP files...', 'permanent-plugin-theme-downloader')
+								: __('Loading plugins and themes...', 'permanent-plugin-theme-downloader')
+							}
+						</p>
+					</div>
+				)}
+
+				{error && (
+					<Notice status="error" isDismissible={false}>
+						{error}
+					</Notice>
+				)}
+
+				{!loading && !regenerating && !error && (
+					<TabPanel
+						className="pptd-tabs"
+						activateByIndex={0}
+						tabs={[
+							{
+								name: 'downloads',
+								title: __('Downloads', 'permanent-plugin-theme-downloader'),
+								className: 'pptd-tab-downloads',
+							},
+							{
+								name: 'log',
+								title: __('Update Log', 'permanent-plugin-theme-downloader'),
+								className: 'pptd-tab-log',
+							},
+						]}
+					>
+						{(tab) => (
+							<div className="pptd-tab-content">
+								{tab.name === 'downloads' && (
+									<>
+										<div className="pptd-section">
+											<h4 className="pptd-section-title">
+												{__('Plugins', 'permanent-plugin-theme-downloader')} ({plugins.length})
+											</h4>
+											{plugins.length === 0 ? (
+												<p className="pptd-empty">{__('No plugins found.', 'permanent-plugin-theme-downloader')}</p>
+											) : (
+												<div className="pptd-list">
+													{plugins.map((plugin) => (
+														<div key={plugin.slug} className="pptd-item">
+															<div className="pptd-item-info">
+																<strong className="pptd-item-name">{plugin.name}</strong>
+																<span className="pptd-item-version">v{plugin.version}</span>
+																{plugin.zip_exists ? (
+																	<code className="pptd-item-url">{plugin.url}</code>
+																) : (
+																	<span className="pptd-item-error">{__('ZIP creation failed', 'permanent-plugin-theme-downloader')}</span>
+																)}
+															</div>
+															<div className="pptd-item-actions">
+																{plugin.zip_exists && (
+																	<>
+																		<Button
+																			icon={copy}
+																			label={__('Copy URL', 'permanent-plugin-theme-downloader')}
+																			onClick={() => copyToClipboard(plugin.url)}
+																			className={copiedUrl === plugin.url ? 'pptd-copied' : ''}
+																		/>
+																		<Button
+																			icon={download}
+																			label={__('Download', 'permanent-plugin-theme-downloader')}
+																			href={plugin.url}
+																			download
+																		/>
+																	</>
+																)}
+															</div>
+														</div>
+													))}
+												</div>
+											)}
+										</div>
+
+										<div className="pptd-section">
+											<h4 className="pptd-section-title">
+												{__('Themes', 'permanent-plugin-theme-downloader')} ({themes.length})
+											</h4>
+											{themes.length === 0 ? (
+												<p className="pptd-empty">{__('No themes found.', 'permanent-plugin-theme-downloader')}</p>
+											) : (
+												<div className="pptd-list">
+													{themes.map((theme) => (
+														<div key={theme.slug} className="pptd-item">
+															<div className="pptd-item-info">
+																<strong className="pptd-item-name">{theme.name}</strong>
+																<span className="pptd-item-version">v{theme.version}</span>
+																{theme.zip_exists ? (
+																	<code className="pptd-item-url">{theme.url}</code>
+																) : (
+																	<span className="pptd-item-error">{__('ZIP creation failed', 'permanent-plugin-theme-downloader')}</span>
+																)}
+															</div>
+															<div className="pptd-item-actions">
+																{theme.zip_exists && (
+																	<>
+																		<Button
+																			icon={copy}
+																			label={__('Copy URL', 'permanent-plugin-theme-downloader')}
+																			onClick={() => copyToClipboard(theme.url)}
+																			className={copiedUrl === theme.url ? 'pptd-copied' : ''}
+																		/>
+																		<Button
+																			icon={download}
+																			label={__('Download', 'permanent-plugin-theme-downloader')}
+																			href={theme.url}
+																			download
+																		/>
+																	</>
+																)}
+															</div>
+														</div>
+													))}
+												</div>
+											)}
+										</div>
+									</>
+								)}
+
+								{tab.name === 'log' && (
+									<div className="pptd-log-section">
+										<div className="pptd-log-header">
+											<h4>{__('Update History', 'permanent-plugin-theme-downloader')}</h4>
+											<p className="pptd-log-description">
+												{__('Automatic log of all plugin and theme updates. ZIP files are regenerated each time an update occurs.', 'permanent-plugin-theme-downloader')}
+											</p>
+										</div>
+										{updateLog.length === 0 ? (
+											<p className="pptd-empty">{__('No updates recorded yet.', 'permanent-plugin-theme-downloader')}</p>
+										) : (
+											<div className="pptd-log-list">
+												{updateLog.map((entry, index) => (
+													<div key={index} className="pptd-log-entry">
+														<div className="pptd-log-icon">
+															{entry.type === 'plugin' ? '🔌' : '🎨'}
+														</div>
+														<div className="pptd-log-info">
+															<div className="pptd-log-name">
+																<strong>{entry.name}</strong>
+																<span className="pptd-log-type">{entry.type}</span>
+															</div>
+															<div className="pptd-log-versions">
+																<span className="pptd-log-old-version">v{entry.old_version}</span>
+																<span className="pptd-log-arrow">→</span>
+																<span className="pptd-log-new-version">v{entry.new_version}</span>
+															</div>
+															<div className="pptd-log-timestamp">{formatDate(entry.timestamp)}</div>
+														</div>
+													</div>
+												))}
+											</div>
+										)}
+									</div>
+								)}
+							</div>
+						)}
+					</TabPanel>
+				)}
+			</div>
+		</>
+	);
+}]]></content>
+  </file>
+  <file path="src/style.scss">
+    <description>This file contains styles for the block in the front end.</description>
+    <content><![CDATA[/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ */
+
+.wp-block-telex-block-permanent-plugin-theme-downloader {
+	padding: 24px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+
+	.pptd-header {
+		margin-bottom: 24px;
+
+		h3 {
+			margin: 0 0 8px 0;
+			font-size: 20px;
+			font-weight: 600;
+			color: #1e1e1e;
+		}
+
+		.pptd-description {
+			margin: 0 0 12px 0;
+			font-size: 14px;
+			color: #757575;
+		}
+	}
+
+	.pptd-section {
+		margin-bottom: 32px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.pptd-section-title {
+		margin: 0 0 16px 0;
+		font-size: 16px;
+		font-weight: 600;
+		color: #1e1e1e;
+		padding-bottom: 8px;
+		border-bottom: 2px solid #f0f0f0;
+	}
+
+	.pptd-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pptd-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 16px;
+		background: #f9f9f9;
+		border: 1px solid #e0e0e0;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+	}
+
+	.pptd-item-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.pptd-item-actions {
+		display: flex;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	.pptd-item-name {
+		font-size: 15px;
+		font-weight: 600;
+		color: #1e1e1e;
+	}
+
+	.pptd-item-version {
+		font-size: 13px;
+		color: #757575;
+		font-weight: 500;
+	}
+
+	.pptd-item-url {
+		font-size: 12px;
+		color: #0073aa;
+		background: #fff;
+		padding: 6px 10px;
+		border-radius: 4px;
+		border: 1px solid #e0e0e0;
+		word-break: break-all;
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	.pptd-item-error {
+		font-size: 12px;
+		color: #d63638;
+		font-style: italic;
+	}
+
+	.pptd-empty {
+		color: #757575;
+		font-style: italic;
+		margin: 0;
+	}
+
+	.pptd-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 40px;
+		gap: 16px;
+
+		p {
+			margin: 0;
+			color: #757575;
+		}
+	}
+
+	.pptd-notice {
+		margin: 0 0 16px 0;
+	}
+
+	.pptd-frontend-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.pptd-download-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 20px;
+		background: #0073aa;
+		color: #fff;
+		text-decoration: none;
+		border-radius: 6px;
+		font-weight: 500;
+		transition: background 0.2s ease;
+
+		&:hover {
+			background: #005a87;
+			color: #fff;
+		}
+
+		&::before {
+			content: '⬇';
+			font-size: 16px;
+		}
+	}
+}]]></content>
+  </file>
+  <file path="src/editor.scss">
+    <description>This file contains styles for the block in the editor.</description>
+    <content><![CDATA[/**
+ * The following styles get applied inside the editor only.
+ */
+
+.wp-block-telex-block-permanent-plugin-theme-downloader {
+	.components-button.pptd-copied {
+		background: #00a32a;
+		color: #fff;
+
+		&:hover {
+			background: #008a20;
+			color: #fff;
+		}
+	}
+
+	.pptd-tabs {
+		margin-top: 16px;
+
+		.components-tab-panel__tabs {
+			display: flex;
+			gap: 8px;
+			border-bottom: 2px solid #e0e0e0;
+			margin-bottom: 20px;
+
+			button {
+				padding: 12px 20px;
+				border: none;
+				background: transparent;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 500;
+				color: #757575;
+				border-bottom: 2px solid transparent;
+				margin-bottom: -2px;
+				transition: all 0.2s ease;
+
+				&:hover {
+					color: #1e1e1e;
+				}
+
+				&.is-active {
+					color: #0073aa;
+					border-bottom-color: #0073aa;
+				}
+			}
+		}
+	}
+
+	.pptd-log-section {
+		padding: 0;
+	}
+
+	.pptd-log-header {
+		margin-bottom: 20px;
+
+		h4 {
+			margin: 0 0 8px 0;
+			font-size: 16px;
+			font-weight: 600;
+			color: #1e1e1e;
+		}
+
+		.pptd-log-description {
+			margin: 0;
+			font-size: 13px;
+			color: #757575;
+		}
+	}
+
+	.pptd-log-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pptd-log-entry {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 16px;
+		background: #f9f9f9;
+		border: 1px solid #e0e0e0;
+		border-left: 4px solid #0073aa;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+	}
+
+	.pptd-log-icon {
+		font-size: 24px;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+
+	.pptd-log-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.pptd-log-name {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 15px;
+
+		strong {
+			color: #1e1e1e;
+			font-weight: 600;
+		}
+	}
+
+	.pptd-log-type {
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		padding: 2px 8px;
+		background: #0073aa;
+		color: #fff;
+		border-radius: 3px;
+		font-weight: 600;
+	}
+
+	.pptd-log-versions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	.pptd-log-old-version {
+		color: #d63638;
+		font-weight: 600;
+	}
+
+	.pptd-log-arrow {
+		color: #757575;
+	}
+
+	.pptd-log-new-version {
+		color: #00a32a;
+		font-weight: 600;
+	}
+
+	.pptd-log-timestamp {
+		font-size: 12px;
+		color: #757575;
+	}
+}]]></content>
+  </file>
+  <file path="src/view.js">
+    <description>This file contains the view function for the block which is responsible for rendering interactive behaviors of the block on the front end.</description>
+    <content><![CDATA[
+/**
+ * Frontend JavaScript for the Permanent Plugin Theme Downloader block.
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+	const downloadLinks = document.querySelectorAll('.pptd-download-link');
+	
+	downloadLinks.forEach(link => {
+		link.addEventListener('click', function(e) {
+			// Allow the default download behavior
+			// Add visual feedback
+			const originalText = this.textContent;
+			this.textContent = '⬇ Downloading...';
+			
+			setTimeout(() => {
+				this.textContent = originalText;
+			}, 2000);
+		});
+	});
+});
+	]]></content>
+  </file>
+  <file path="src/render.php">
+    <description>This file contains the render callback function for the block, which is responsible for rendering the block content on the front end.</description>
+    <content><![CDATA[<?php
+/**
+ * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ */
+
+$plugins = permanent_plugin_theme_downloader_get_plugins();
+$themes = permanent_plugin_theme_downloader_get_themes();
+?>
+<div <?php echo get_block_wrapper_attributes(); ?>>
+	<div class="pptd-header">
+		<h3><?php esc_html_e( 'Available Downloads', 'permanent-plugin-theme-downloader' ); ?></h3>
+	</div>
+
+	<?php if ( ! empty( $plugins ) ) : ?>
+		<div class="pptd-section">
+			<h4 class="pptd-section-title">
+				<?php esc_html_e( 'Plugins', 'permanent-plugin-theme-downloader' ); ?> (<?php echo count( $plugins ); ?>)
+			</h4>
+			<div class="pptd-frontend-list">
+				<?php foreach ( $plugins as $plugin ) : ?>
+					<a href="<?php echo esc_url( $plugin['url'] ); ?>" class="pptd-download-link" download>
+						<?php echo esc_html( $plugin['name'] ); ?>
+						<span class="pptd-item-version">v<?php echo esc_html( $plugin['version'] ); ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<?php if ( ! empty( $themes ) ) : ?>
+		<div class="pptd-section">
+			<h4 class="pptd-section-title">
+				<?php esc_html_e( 'Themes', 'permanent-plugin-theme-downloader' ); ?> (<?php echo count( $themes ); ?>)
+			</h4>
+			<div class="pptd-frontend-list">
+				<?php foreach ( $themes as $theme ) : ?>
+					<a href="<?php echo esc_url( $theme['url'] ); ?>" class="pptd-download-link" download>
+						<?php echo esc_html( $theme['name'] ); ?>
+						<span class="pptd-item-version">v<?php echo esc_html( $theme['version'] ); ?></span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<?php if ( empty( $plugins ) && empty( $themes ) ) : ?>
+		<p class="pptd-empty">
+			<?php esc_html_e( 'No plugins or themes available for download.', 'permanent-plugin-theme-downloader' ); ?>
+		</p>
+	<?php endif; ?>
+</div>
+]]></content>
+  </file>
+</artefact>

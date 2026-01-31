@@ -1,0 +1,163 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ */
+
+.wp-block-telex-block-permanent-plugin-theme-downloader {
+	padding: 24px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+
+	.pptd-header {
+		margin-bottom: 24px;
+
+		h3 {
+			margin: 0 0 8px 0;
+			font-size: 20px;
+			font-weight: 600;
+			color: #1e1e1e;
+		}
+
+		.pptd-description {
+			margin: 0 0 12px 0;
+			font-size: 14px;
+			color: #757575;
+		}
+	}
+
+	.pptd-section {
+		margin-bottom: 32px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.pptd-section-title {
+		margin: 0 0 16px 0;
+		font-size: 16px;
+		font-weight: 600;
+		color: #1e1e1e;
+		padding-bottom: 8px;
+		border-bottom: 2px solid #f0f0f0;
+	}
+
+	.pptd-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.pptd-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 16px;
+		background: #f9f9f9;
+		border: 1px solid #e0e0e0;
+		border-radius: 6px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+	}
+
+	.pptd-item-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.pptd-item-actions {
+		display: flex;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	.pptd-item-name {
+		font-size: 15px;
+		font-weight: 600;
+		color: #1e1e1e;
+	}
+
+	.pptd-item-version {
+		font-size: 13px;
+		color: #757575;
+		font-weight: 500;
+	}
+
+	.pptd-item-url {
+		font-size: 12px;
+		color: #0073aa;
+		background: #fff;
+		padding: 6px 10px;
+		border-radius: 4px;
+		border: 1px solid #e0e0e0;
+		word-break: break-all;
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	.pptd-item-error {
+		font-size: 12px;
+		color: #d63638;
+		font-style: italic;
+	}
+
+	.pptd-empty {
+		color: #757575;
+		font-style: italic;
+		margin: 0;
+	}
+
+	.pptd-loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 40px;
+		gap: 16px;
+
+		p {
+			margin: 0;
+			color: #757575;
+		}
+	}
+
+	.pptd-notice {
+		margin: 0 0 16px 0;
+	}
+
+	.pptd-frontend-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.pptd-download-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 20px;
+		background: #0073aa;
+		color: #fff;
+		text-decoration: none;
+		border-radius: 6px;
+		font-weight: 500;
+		transition: background 0.2s ease;
+
+		&:hover {
+			background: #005a87;
+			color: #fff;
+		}
+
+		&::before {
+			content: '⬇';
+			font-size: 16px;
+		}
+	}
+}
